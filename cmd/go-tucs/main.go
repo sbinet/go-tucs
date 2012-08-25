@@ -9,7 +9,9 @@ import (
 func main() {
 	app := tucs.NewApp(true, true)
 
-	app.AddWorker(NewPrintWorker(tucs.Readout))
+	app.AddWorker(
+		PrintWorker(tucs.Readout),
+		)
 
 	err := app.Run()
 	if err != nil {
