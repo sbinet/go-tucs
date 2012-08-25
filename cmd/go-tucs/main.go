@@ -11,7 +11,7 @@ func main() {
 
 	app.AddWorker(
 		PrintWorker(tucs.Readout),
-		)
+	)
 
 	err := app.Run()
 	if err != nil {
