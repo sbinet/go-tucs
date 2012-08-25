@@ -116,7 +116,8 @@ func (r *Region) SetParent(parents ...*Region) {
 	r.parents = append(r.parents, parents...)
 }
 
-type RegionFct func (t RegionType, region *Region) error
+type RegionFct func(t RegionType, region *Region) error
+
 func (r *Region) IterRegions(t RegionType, fct RegionFct) error {
 	children := r.Children(t)
 	for _, child := range children {

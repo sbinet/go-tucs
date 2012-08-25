@@ -23,7 +23,7 @@ type App struct {
 func NewApp(useMBTS, useSpecialEBmods bool) *App {
 	app := &App{
 		workers:  []Worker{},
-	detector: nil,
+		detector: nil,
 	}
 	app.msg("Welcome to Go-TUCS (pid=%d). Building detector tree...\n", os.Getpid())
 	app.detector = TileCal(useMBTS, useSpecialEBmods)
@@ -49,9 +49,9 @@ func (app *App) Run() error {
 
 		err = app.detector.IterRegions(
 			w.RegionType(),
-			func(t RegionType,region *Region) error {
-			return w.ProcessRegion(region)
-		})
+			func(t RegionType, region *Region) error {
+				return w.ProcessRegion(region)
+			})
 
 		err = w.ProcessStop()
 		if err != nil {
@@ -146,10 +146,10 @@ func TileCal(useMBTS, useSpecialEBmods bool) *Region {
 		case "LBA", "LBC":
 			EB = false
 			chan2pmt = []int{
-				1,   2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12,
-		                13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
-		                27, 26, 25, 30, 29, 28,-33,-32, 31, 36, 35, 34,
-				39, 38, 37, 42, 41, 40, 45,-44, 43, 48, 47, 46,
+				1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+				13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
+				27, 26, 25, 30, 29, 28, -33, -32, 31, 36, 35, 34,
+				39, 38, 37, 42, 41, 40, 45, -44, 43, 48, 47, 46,
 			}
 		}
 
@@ -158,10 +158,10 @@ func TileCal(useMBTS, useSpecialEBmods bool) *Region {
 		// The PMT mapping is a little different since it's a physically
 		// smaller drawer
 		chan2pmtSpecial := []int{
-			-1,   -2,  -3,  -4,  5,  6,  7,  8,  9, 10, 11, 12,
-		        13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
-		        -27,-26,-25,-31,-32,-28, 33, 29, 30,-36,-35, 34,
-		        44, 38, 37, 43, 42, 41,-45,-39,-40,-48,-47,-46,
+			-1, -2, -3, -4, 5, 6, 7, 8, 9, 10, 11, 12,
+			13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
+			-27, -26, -25, -31, -32, -28, 33, 29, 30, -36, -35, 34,
+			44, 38, 37, 43, 42, 41, -45, -39, -40, -48, -47, -46,
 		}
 
 		for _, module := range partition.Children(Readout) {
@@ -169,17 +169,16 @@ func TileCal(useMBTS, useSpecialEBmods bool) *Region {
 			channels := []*Region{}
 			table := chan2pmtSpecial
 			// for each module, create the PMTs/channels within it
-			if useSpecialEBmods && (
-				(pname == "EBA" && mname == "m15") ||
+			if useSpecialEBmods && ((pname == "EBA" && mname == "m15") ||
 				(pname == "EBC" && mname == "m18")) {
 				table = chan2pmtSpecial
 			} else {
 				table = chan2pmt
 			}
-			for x := 0; x<48; x++ {
+			for x := 0; x < 48; x++ {
 				if table[x] > 0 {
-					n1 := fmt.Sprintf("c%02d",x)
-					n2 := fmt.Sprintf("p%02d",table[x])
+					n1 := fmt.Sprintf("c%02d", x)
+					n2 := fmt.Sprintf("p%02d", table[x])
 					channels = append(channels,
 						NewRegion(Readout, n1, n2))
 				}
@@ -228,28 +227,28 @@ func TileCal(useMBTS, useSpecialEBmods bool) *Region {
 				towers := []*Region{}
 				add_tower := func(ids ...int) {
 					for _, id := range ids {
-						towers = append(towers, 
-							NewRegion(Physical, 
-							fmt.Sprintf("t%02d", id)))
+						towers = append(towers,
+							NewRegion(Physical,
+								fmt.Sprintf("t%02d", id)))
 					}
 				}
 				sname := sample.Name(0)
 				if strings.Contains(pname, "LB") {
 					// towers in long barrel
 					if strings.Contains(sname, "A") {
-						for i := 0; i<10; i++ {
+						for i := 0; i < 10; i++ {
 							add_tower(i)
 						}
 					} else if strings.Contains(sname, "BC") {
-						for i := 0; i<9; i++ {
+						for i := 0; i < 9; i++ {
 							add_tower(i)
 						}
 					} else if strings.Contains(sname, "D") {
 						if "LBA" == partition.Name(0) {
 							// Draw D0 cell on A-side
-							add_tower(0,2,4,6)
+							add_tower(0, 2, 4, 6)
 						} else {
-							add_tower(0,2,4,6)
+							add_tower(0, 2, 4, 6)
 						}
 					}
 				} else {
@@ -257,11 +256,10 @@ func TileCal(useMBTS, useSpecialEBmods bool) *Region {
 					if strings.Contains(sname, "A") {
 						add_tower(11, 12, 13, 14, 15)
 					} else if strings.Contains(sname, "BC") {
-						add_tower(9,10,11,12,13,14)
+						add_tower(9, 10, 11, 12, 13, 14)
 					} else if strings.Contains(sname, "D") {
 						// special modules have D08 merged with D10
-						if useSpecialEBmods && (
-							(pname == "EBA" && mname == "m15") ||
+						if useSpecialEBmods && ((pname == "EBA" && mname == "m15") ||
 							(pname == "EBC" && mname == "m18")) {
 							add_tower(10, 12)
 						} else {
@@ -269,18 +267,18 @@ func TileCal(useMBTS, useSpecialEBmods bool) *Region {
 						}
 					} else if strings.Contains(sname, "E") {
 						if !useMBTS || mbts == 0 {
-							add_tower(10,11,13,15)
+							add_tower(10, 11, 13, 15)
 						} else if mbts == 1 {
 							// MBTS pass through, crack scintillator missing
 							add_tower(10, 11)
 							towers = append(towers,
 								NewRegion(Physical, "MBTS"+sample.MBTSName()),
-								)
+							)
 						} else if mbts == 2 {
-							add_tower(10,11,13,15)
+							add_tower(10, 11, 13, 15)
 							towers = append(towers,
 								NewRegion(Physical, "MBTS"+sample.MBTSName()),
-								)
+							)
 						}
 					}
 				}
@@ -299,8 +297,8 @@ func TileCal(useMBTS, useSpecialEBmods bool) *Region {
 								chans = append(chans, ch)
 							}
 						}
-					} else if useMBTS && mbts==2 && 
-						strings.Contains(tower.Hash(0,0), "sE_t15") {
+					} else if useMBTS && mbts == 2 &&
+						strings.Contains(tower.Hash(0, 0), "sE_t15") {
 						// take care of cross-module crack scintillators
 						chans = append(chans, chCrack[pname][tower.CrackPartner()])
 					} else {

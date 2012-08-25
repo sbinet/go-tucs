@@ -1,15 +1,14 @@
 package tucs
 
-
 type Event struct {
-	Run Run
+	Run  Run
 	Data interface{}
 }
 
 type Run struct {
-	Type string
+	Type   string
 	Number int64
-	Data interface{}
+	Data   interface{}
 }
 
 // EOF

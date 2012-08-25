@@ -8,14 +8,14 @@ import (
 )
 
 type PrintWorker struct {
-	rtype tucs.RegionType
+	rtype    tucs.RegionType
 	nregions int
 }
 
 func NewPrintWorker(rtype tucs.RegionType) *PrintWorker {
 	w := &PrintWorker{
-	rtype: rtype,
-	nregions: 0,
+		rtype:    rtype,
+		nregions: 0,
 	}
 	return w
 }
