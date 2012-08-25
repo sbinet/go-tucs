@@ -9,7 +9,7 @@ import (
 type RegionType uint
 
 const (
-	ReadOut RegionType = iota
+	Readout RegionType = iota
 	Physical
 	B175
 	TestBeam
@@ -17,7 +17,7 @@ const (
 
 func (rt RegionType) String() string {
 	switch rt {
-	case ReadOut:
+	case Readout:
 		return "readout"
 	case Physical:
 		return "physical"
@@ -33,15 +33,15 @@ type Region struct {
 	names    []string
 	parents  []*Region
 	children []*Region
-	hashes map[string]string
+	hashes   map[string]string
 	events   []Event
-	Type  RegionType
+	Type     RegionType
 }
 
 func NewRegion(typ RegionType, name string, names ...string) *Region {
 	r := &Region{
-	names: []string{name},
-	Type: typ,
+		names: []string{name},
+		Type:  typ,
 	}
 	r.names = append(r.names, names...)
 
@@ -84,11 +84,25 @@ func (r *Region) Children(regtype RegionType) []*Region {
 	return children
 }
 
+func (r *Region) SetChildren(children []*Region) {
+	set := make(map[*Region]struct{})
+	for _, p := range r.children {
+		set[p] = struct{}{}
+	}
+
+	for _, p := range children {
+		if _, ok := set[p]; !ok {
+			set[p] = struct{}{}
+			r.children = append(r.children, p)
+		}
+	}
+}
+
 func (r *Region) Parent(regtype RegionType, idx uint) *Region {
 	if len(r.parents) == 0 {
 		return nil
 	}
-	
+
 	for _, p := range r.parents {
 		if p.Type == regtype {
 			return p
@@ -98,13 +112,31 @@ func (r *Region) Parent(regtype RegionType, idx uint) *Region {
 	return r.parents[idx]
 }
 
+func (r *Region) SetParent(parents ...*Region) {
+	r.parents = append(r.parents, parents...)
+}
+
+type RegionFct func (t RegionType, region *Region) error
+func (r *Region) IterRegions(t RegionType, fct RegionFct) error {
+	children := r.Children(t)
+	for _, child := range children {
+		err := child.IterRegions(t, fct)
+		if err != nil {
+			return err
+		}
+	}
+	return fct(t, r)
+}
+
+/*
 func (r *Region) Regions(t RegionType) chan *Region {
 	ch := make(chan *Region)
-	
+
 	go func() {
 		children := r.Children(t)
-		for _,child := range children {
-			for rchild := range child.Regions(t) {
+		for _, child := range children {
+			regions := child.Regions(t)
+			for rchild := range regions {
 				ch <- rchild
 			}
 		}
@@ -112,6 +144,7 @@ func (r *Region) Regions(t RegionType) chan *Region {
 	}()
 	return ch
 }
+*/
 
 func (r *Region) Number(nidx, pidx uint) []int {
 	//TODO. or return 4 ints ? part, module, sample, tower
@@ -119,31 +152,31 @@ func (r *Region) Number(nidx, pidx uint) []int {
 	return nbr
 }
 
-func (r *Region) Channels(useSpecialEBmods bool) []string {
+func (r *Region) Channels(useSpecialEBmods bool) []int {
 	//TODO.
-	chans := []string{}
+	chans := []int{}
 	return chans
 }
 
 func (r *Region) EtaPhi() (eta, phi float64, err error) {
-	if !strings.Contains(r.Hash(0,0), "_t") {
+	if !strings.Contains(r.Hash(0, 0), "_t") {
 		return eta, phi, fmt.Errorf("no eta/phi cell position")
 	}
 
-	nbr := r.Number(0,0)
+	nbr := r.Number(0, 0)
 	part := nbr[0]
 	module := float64(nbr[1])
 	sample := nbr[2]
 	tower := float64(nbr[3])
 
 	if module < 33 {
-		phi = (module-0.5) / 32.0 * math.Pi
+		phi = (module - 0.5) / 32.0 * math.Pi
 	} else {
-		phi = (module-64.5) / 32.0 * math.Pi
+		phi = (module - 64.5) / 32.0 * math.Pi
 	}
 
 	if sample < 2 {
-		eta = tower * 0.1 + 0.05
+		eta = tower*0.1 + 0.05
 	} else if sample < 3 {
 		eta = tower * 0.1
 	} else {
@@ -154,6 +187,21 @@ func (r *Region) EtaPhi() (eta, phi float64, err error) {
 		eta *= -1.0
 	}
 	return
+}
+
+func (r *Region) MBTSType() int {
+	//TODO
+	return 0
+}
+
+func (r *Region) MBTSName() string {
+	//TODO
+	return "<MBTSName>"
+}
+
+func (r *Region) CrackPartner() string {
+	//TODO
+	return "<CrackPartner>"
 }
 
 // EOF
