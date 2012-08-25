@@ -54,6 +54,7 @@ func (r *Region) Contains(rhs *Region) bool {
 }
 
 func (r *Region) Hash(nidx, pidx uint) string {
+	//TODO
 	key := fmt.Sprintf("%d_%s_%d", nidx, r.Type, pidx)
 	return r.hashes[key]
 }

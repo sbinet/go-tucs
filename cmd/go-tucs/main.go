@@ -3,7 +3,6 @@ package main
 import (
 	"log"
 
-	// 3rd party
 	"github.com/sbinet/go-tucs/pkg/tucs"
 )
 
