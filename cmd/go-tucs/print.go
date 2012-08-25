@@ -27,7 +27,7 @@ func (w *printWorker) ProcessStart() error {
 
 func (w *printWorker) ProcessStop() error {
 	fmt.Printf("::worker-stop...\n")
-	fmt.Printf("  processed [%d] region(s)\n", w.nregions)
+	fmt.Printf("  processed [%d] region(s) of type [%s]\n", w.nregions, w.rtype)
 	fmt.Printf("::worker-stop... [done]\n")
 	return nil
 }
