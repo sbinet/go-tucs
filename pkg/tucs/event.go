@@ -2,7 +2,7 @@ package tucs
 
 type Event struct {
 	Run  Run
-	Data interface{}
+	Data map[string]interface{}
 }
 
 type Run struct {
