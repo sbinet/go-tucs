@@ -2,6 +2,7 @@ package tucs
 
 import (
 	"sort"
+	"time"
 )
 
 type Event struct {
@@ -12,6 +13,7 @@ type Event struct {
 type Run struct {
 	Type   string
 	Number int64
+	Time   time.Time
 	Data   interface{}
 }
 
