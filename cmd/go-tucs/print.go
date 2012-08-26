@@ -42,4 +42,7 @@ func (w *printWorker) RegionType() tucs.RegionType {
 	return w.rtype
 }
 
+// check printWorker satisfies the tucs.Worker interface
+var _ tucs.Worker = (*printWorker)(nil)
+
 // EOF
