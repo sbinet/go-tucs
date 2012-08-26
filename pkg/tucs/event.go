@@ -18,6 +18,7 @@ type Run struct {
 }
 
 // RunList is a slice of Runs which implements sort.Interface
+// TODO: make it a slice of *pointers* to Run ? (if too slow)
 type RunList []Run
 
 func (r RunList) Len() int           { return len(r) }
