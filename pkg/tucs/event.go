@@ -17,16 +17,30 @@ type Run struct {
 	Data   interface{}
 }
 
-// RunList is a slice of Runs which implements sort.Interface
+// runList is a slice of Runs which implements sort.Interface
 // TODO: make it a slice of *pointers* to Run ? (if too slow)
-type RunList []Run
+type runList struct {
+	runs []Run
+	fct  func (i, j Run) bool
+}
 
-func (r RunList) Len() int           { return len(r) }
-func (r RunList) Less(i, j int) bool { return r[i].Number < r[j].Number }
-func (r RunList) Swap(i, j int)      { r[i], r[j] = r[j], r[i] }
+func (r runList) Len() int           { return len(r.runs) }
+func (r runList) Less(i, j int) bool { return r.fct(r.runs[i], r.runs[j]) }
+func (r runList) Swap(i, j int)      { r.runs[i], r.runs[j] = r.runs[j], r.runs[i] }
 
-func (r RunList) Sort() { sort.Sort(r) }
+func (r runList) Sort() { sort.Sort(r) }
 
-func SortRunList(runs []Run) { sort.Sort(RunList(runs)) }
+// SortRunList sorts runs by run number
+func SortRunList(runs []Run) { 
+	sort.Sort(runList{
+		runs:runs, 
+		fct:func(i,j Run) bool {return i.Number < j.Number},
+	})
+}
+
+// SortRunListBy sorts runs by the provided function fct
+func SortRunListBy(runs []Run, fct func(i,j Run) bool) { 
+	sort.Sort(runList{runs,fct})
+}
 
 // EOF
