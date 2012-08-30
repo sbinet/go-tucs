@@ -3,6 +3,7 @@ package tucs
 import (
 	"fmt"
 	"math"
+	"strconv"
 	"strings"
 )
 
@@ -54,8 +55,16 @@ func (r *Region) Contains(rhs *Region) bool {
 }
 
 func (r *Region) Hash(nidx, pidx uint) string {
-	//TODO
 	key := fmt.Sprintf("%d_%s_%d", nidx, r.Type, pidx)
+	if hash, ok := r.hashes[key]; ok {
+		return hash
+	}
+	parent := r.Parent(r.Type, pidx)
+	if parent != nil {
+		r.hashes[key] = parent.Hash(nidx, pidx) + "_" + r.Name(nidx)
+	} else {
+		r.hashes[key] = r.Name(nidx)
+	}
 	return r.hashes[key]
 }
 
@@ -149,8 +158,64 @@ func (r *Region) Regions(t RegionType) chan *Region {
 */
 
 func (r *Region) Number(nidx, pidx uint) []int {
-	//TODO. or return 4 ints ? part, module, sample, tower
+	hashstr := r.Hash(nidx, 0)
+	hash := []string{}
+	if strings.HasPrefix(hashstr, "TILECAL") {
+		hash = strings.Split(hashstr, "_")[1:]
+	} else {
+		hash = strings.Split(hashstr, "_")
+	}
+
 	nbr := []int{}
+	if len(hash) >= 1 {
+		// get partition or side
+		part := map[string]int{"LBA": 1, "LBC":2, "EBA":3, "EBC":4}
+		nbr = append(nbr, part[hash[0]])
+	}
+
+	if len(hash) >= 2 {
+		// get module
+		mid, err := strconv.ParseInt(hash[1][1:], 10, 64)
+		if err != nil {
+			panic("tucs.Region.Number: "+err.Error())
+		}
+		nbr = append(nbr, int(mid))
+	}
+
+	if len(hash) >= 3 {
+		// get channel or sample
+		switch r.Type {
+		case Physical:
+			samp := map[string]int{"A": 0, "BC":1, "D":2, "E":3}
+			nbr = append(nbr, samp[hash[2][1:]])
+
+		default:
+			chid, err := strconv.ParseInt(hash[2][1:], 10, 64)
+			if err != nil {
+				panic("tucs.Region.Number: "+err.Error())
+			}
+			nbr = append(nbr, int(chid))
+		}
+	}
+
+	if len(hash) >= 4 {
+		// get ADC
+		switch r.Type {
+		case Physical:
+			if hash[3][0] == 't' {
+				adcid, err := strconv.ParseInt(hash[3][1:], 10, 64)
+				if err != nil {
+					panic("tucs.Region.Number: "+err.Error())
+				}
+				nbr = append(nbr, int(adcid))
+			} else if hash[3][:4] == "MBTS" {
+				nbr = append(nbr, 15)
+			}
+		default:
+			gain := map[string]int{"lowgain":0, "highgain":1}
+			nbr = append(nbr, gain[hash[3]])
+		}
+	}
 	return nbr
 }
 
