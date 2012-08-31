@@ -18,4 +18,5 @@ func idx_intslice(val int, slice []int) int {
 	}
 	return -1
 }
+
 // EOF

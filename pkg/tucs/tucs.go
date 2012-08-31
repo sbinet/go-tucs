@@ -122,7 +122,7 @@ func TileCal(useMBTS, useSpecialEBmods bool) *Region {
 
 		// make them children of partition
 		partition.SetChildren(modules)
-		for _, m := range modules {//partition.Children(Readout) {
+		for _, m := range modules { //partition.Children(Readout) {
 			m.SetParent(partition)
 		}
 

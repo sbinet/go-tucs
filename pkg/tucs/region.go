@@ -41,12 +41,12 @@ type Region struct {
 
 func NewRegion(typ RegionType, name string, names ...string) *Region {
 	r := &Region{
-		names: []string{name},
-		parents: make([]*Region, 0),
+		names:    []string{name},
+		parents:  make([]*Region, 0),
 		children: make([]*Region, 0),
-		hashes: make(map[string]string),
-		events: make([]Event, 0),
-		Type:  typ,
+		hashes:   make(map[string]string),
+		events:   make([]Event, 0),
+		Type:     typ,
 	}
 	r.names = append(r.names, names...)
 
@@ -173,7 +173,7 @@ func (r *Region) Number(nidx, pidx uint) []int {
 	nbr := []int{}
 	if len(hash) >= 1 {
 		// get partition or side
-		part := map[string]int{"LBA": 1, "LBC":2, "EBA":3, "EBC":4}
+		part := map[string]int{"LBA": 1, "LBC": 2, "EBA": 3, "EBC": 4}
 		nbr = append(nbr, part[hash[0]])
 	}
 
@@ -191,13 +191,13 @@ func (r *Region) Number(nidx, pidx uint) []int {
 		// get channel or sample
 		switch r.Type {
 		case Physical:
-			samp := map[string]int{"A": 0, "BC":1, "D":2, "E":3}
+			samp := map[string]int{"A": 0, "BC": 1, "D": 2, "E": 3}
 			nbr = append(nbr, samp[hash[2][1:]])
 
 		default:
 			chid, err := strconv.ParseInt(hash[2][1:], 10, 64)
 			if err != nil {
-				panic("tucs.Region.Number: "+err.Error())
+				panic("tucs.Region.Number: " + err.Error())
 			}
 			nbr = append(nbr, int(chid))
 		}
@@ -210,14 +210,14 @@ func (r *Region) Number(nidx, pidx uint) []int {
 			if hash[3][0] == 't' {
 				adcid, err := strconv.ParseInt(hash[3][1:], 10, 64)
 				if err != nil {
-					panic("tucs.Region.Number: "+err.Error())
+					panic("tucs.Region.Number: " + err.Error())
 				}
 				nbr = append(nbr, int(adcid))
 			} else if hash[3][:4] == "MBTS" {
 				nbr = append(nbr, 15)
 			}
 		default:
-			gain := map[string]int{"lowgain":0, "highgain":1}
+			gain := map[string]int{"lowgain": 0, "highgain": 1}
 			nbr = append(nbr, gain[hash[3]])
 		}
 	}
@@ -238,42 +238,40 @@ func (r *Region) Channels(useSpecialEBmods bool) []int {
 		{
 			// A
 			chans_t{
-				{1,4},{5,8},{9,10},{15,18},{19,20},{23,26},{29,32},{35,38},{37,36},{45,46},
+				{1, 4}, {5, 8}, {9, 10}, {15, 18}, {19, 20}, {23, 26}, {29, 32}, {35, 38}, {37, 36}, {45, 46},
 			},
 			// BC
 			chans_t{
-				{3,2},{7,6},{11,12},{17,16},{21,22},{27,28},{33,34},{39,40},{47,42},
+				{3, 2}, {7, 6}, {11, 12}, {17, 16}, {21, 22}, {27, 28}, {33, 34}, {39, 40}, {47, 42},
 			},
 			// D
 			chans_t{
-				{-1,0},{},{13,14},{},{25,24},{},{41,44},
+				{-1, 0}, {}, {13, 14}, {}, {25, 24}, {}, {41, 44},
 			},
 			// E
-			chans_t{
-				
-			},
+			chans_t{},
 		},
 		// EB
 		{
 			// A
 			chans_t{
-				{},{},{},{},{},{},{},{},{},{},{},{7,6},{11,10},{21,20},{32,31},{40,41},
+				{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {7, 6}, {11, 10}, {21, 20}, {32, 31}, {40, 41},
 			},
 			// BC
 			chans_t{
-				{},{},{},{},{},{},{},{},{},{5,4},{9,8},{15,14},{23,22},{35,30},{36,39},
+				{}, {}, {}, {}, {}, {}, {}, {}, {}, {5, 4}, {9, 8}, {15, 14}, {23, 22}, {35, 30}, {36, 39},
 			},
 			// D
 			chans_t{
-				{},{},{},{},{},{},{},{},{3,2},{},{17,16},{},{37,38},
+				{}, {}, {}, {}, {}, {}, {}, {}, {3, 2}, {}, {17, 16}, {}, {37, 38},
 			},
 			// E
 			chans_t{
-				{},{},{},{},{},{},{},{},{},{},{13},{12},{},{1},{},{0},
+				{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {13}, {12}, {}, {1}, {}, {0},
 			},
 		},
 	}
-	nbr := r.Number(0,0)
+	nbr := r.Number(0, 0)
 	part := nbr[0]
 	module := nbr[1]
 	sample := nbr[2]
@@ -284,9 +282,9 @@ func (r *Region) Channels(useSpecialEBmods bool) []int {
 	} else {
 		barrel = 1
 	}
-	
+
 	// special modules: EBA15 and EBC18
-	if useSpecialEBmods && ((part==3 && module==15) || (part==4 && module==18)) {
+	if useSpecialEBmods && ((part == 3 && module == 15) || (part == 4 && module == 18)) {
 		// fixit
 		cell2chan = [][]chans_t{
 			// LB
@@ -295,22 +293,22 @@ func (r *Region) Channels(useSpecialEBmods bool) []int {
 			{
 				// A
 				chans_t{
-					{},{},{},{},{},{},{},{},{},{},{},{7,6},{11,10},{21,20},{32,31},{40,41},
+					{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {7, 6}, {11, 10}, {21, 20}, {32, 31}, {40, 41},
 				},
-				
+
 				// BC
 				chans_t{
-					{},{},{},{},{},{},{},{},{},{5,4},{9,8},{15,14},{23,22},{35,30},{36,39},
+					{}, {}, {}, {}, {}, {}, {}, {}, {}, {5, 4}, {9, 8}, {15, 14}, {23, 22}, {35, 30}, {36, 39},
 				},
 
 				// D - D5 (or D10) merged with D4 (or D08)
 				chans_t{
-					{},{},{},{},{},{},{},{},{},{},{17,16},{},{37,38},
+					{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {17, 16}, {}, {37, 38},
 				},
 
 				// E - E3, E4 -> chan 18, 19
 				chans_t{
-					{},{},{},{},{},{},{},{},{},{},{13},{12},{},{19},{},{18},
+					{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {13}, {12}, {}, {19}, {}, {18},
 				},
 			},
 		}
@@ -360,7 +358,7 @@ func (r *Region) EtaPhi() (eta, phi float64, err error) {
 //  1 if the MBTS is present but the crack missing
 //  2 if the MBTS is present and the crack present
 func (r *Region) MBTSType() int {
-	nbr := r.Number(0,0)
+	nbr := r.Number(0, 0)
 	if len(nbr) < 2 {
 		panic("tucs.Region.MBTSType: this should only be called at the module level or lower")
 	}
@@ -369,21 +367,21 @@ func (r *Region) MBTSType() int {
 
 	switch part {
 	case 3:
-		if in_intslice(module, 
-			[]int{3,12,23,30,35,44,53,60}) {
+		if in_intslice(module,
+			[]int{3, 12, 23, 30, 35, 44, 53, 60}) {
 			return 1
 		} else if in_intslice(module,
-			[]int{4,13,24,31,36,45,54,61}) {
+			[]int{4, 13, 24, 31, 36, 45, 54, 61}) {
 			return 2
 		} else {
 			return 0
 		}
 	case 4:
-		if in_intslice(module, 
-			[]int{4,13,20,28,37,45,54,61}) {
+		if in_intslice(module,
+			[]int{4, 13, 20, 28, 37, 45, 54, 61}) {
 			return 1
 		} else if in_intslice(module,
-			[]int{5,12,19,27,36,44,55,62}) {
+			[]int{5, 12, 19, 27, 36, 44, 55, 62}) {
 			return 2
 		} else {
 			return 0
@@ -396,7 +394,7 @@ func (r *Region) MBTSType() int {
 
 // MBTSName returns a stub name consistent with L1 trigger name
 func (r *Region) MBTSName() string {
-	nbr := r.Number(0,0)
+	nbr := r.Number(0, 0)
 	if len(nbr) < 2 {
 		panic("tucs.Region.MBTSName: this should only be called at the module level or lower")
 	}
@@ -406,7 +404,7 @@ func (r *Region) MBTSName() string {
 	switch part {
 	case 3:
 		name = append(name, "A")
-		idx := idx_intslice(module, []int{4,13,24,31,36,44,53,61,03,12,23,30,35,45,54,60})
+		idx := idx_intslice(module, []int{4, 13, 24, 31, 36, 44, 53, 61, 03, 12, 23, 30, 35, 45, 54, 60})
 		if idx >= 0 {
 			// FIXME: should the format be %02d instead ?
 			name = append(name, fmt.Sprintf("%d", idx))
@@ -416,7 +414,7 @@ func (r *Region) MBTSName() string {
 
 	case 4:
 		name = append(name, "C")
-		idx := idx_intslice(module, []int{5,13,20,28,37,45,55,62,04,12,19,27,36,44,54,61})
+		idx := idx_intslice(module, []int{5, 13, 20, 28, 37, 45, 55, 62, 04, 12, 19, 27, 36, 44, 54, 61})
 		if idx >= 0 {
 			// FIXME: should the format be %02d instead ?
 			name = append(name, fmt.Sprintf("%d", idx))
@@ -431,7 +429,7 @@ func (r *Region) MBTSName() string {
 // CrackPartner returns the module name of the module partner with which that
 // region shares the crack scintillator.
 func (r *Region) CrackPartner() string {
-	nbr := r.Number(0,0)
+	nbr := r.Number(0, 0)
 	if len(nbr) < 2 {
 		panic("tucs.Region.CrackPartner: this should only be called at the module level or lower")
 	}
@@ -443,18 +441,18 @@ func (r *Region) CrackPartner() string {
 	switch part {
 	case 3:
 		pairs = [][]int{
-			{3,4},{12,13},{23,24},{30,31},{35,36},{44,45},{53,54},{60,61},
+			{3, 4}, {12, 13}, {23, 24}, {30, 31}, {35, 36}, {44, 45}, {53, 54}, {60, 61},
 		}
 
 	case 4:
 		pairs = [][]int{
-			{4,5},{13,12},{20,19},{28,27},{37,36},{45,44},{54,55},{61,62},
+			{4, 5}, {13, 12}, {20, 19}, {28, 27}, {37, 36}, {45, 44}, {54, 55}, {61, 62},
 		}
 
 	default:
 	}
 
-	for _,v := range pairs {
+	for _, v := range pairs {
 		if module == v[0] {
 			name = fmt.Sprintf("m%02d", v[1])
 			break
