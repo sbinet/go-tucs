@@ -2,13 +2,13 @@ package tucs
 
 import (
 	"fmt"
+	"io"
 	"math"
 	"strconv"
 	"strings"
 )
 
 type RegionType uint
-
 const (
 	Readout RegionType = iota
 	Physical
@@ -30,15 +30,30 @@ func (rt RegionType) String() string {
 	return "<unknown>"
 }
 
+// Region is what a detector tree is made of.
+//
+// Each region has various attributes: its parent(s), its child(ren), and any
+// event object associated with it.
+// One can also call the Hash method to get a unique location for this region in
+// detector geometry tree.
 type Region struct {
 	names    []string
+	// the set of parent region(s) this region is attached to.
 	parents  []*Region
+	// the set of children regions this region is made of.
 	children []*Region
+	// hashes stores a unique identifier for each region.
 	hashes   map[string]string
+	// events is a list of Events associated with a particular region.
 	events   []Event
+	// the Type for any given region says if region is part of the
+	// read-out electronics (partitions, modules, channels) or the physical
+	// geometry (cells, towers).
+	// In case of ambiguity, assume Readout.
 	Type     RegionType
 }
 
+// NewRegion creates a new Region of type typ with primary name name
 func NewRegion(typ RegionType, name string, names ...string) *Region {
 	r := &Region{
 		names:    []string{name},
@@ -130,6 +145,56 @@ func (r *Region) SetParent(parents ...*Region) {
 	r.parents = append(r.parents, parents...)
 }
 
+// SanityCheck checks whether the internal state of this Region is consistent
+// with all the other Regions it is in relation (parents and children)
+// It returns a non-nil error in case of inconsistency
+func (r *Region) SanityCheck() error {
+	var err error
+	for _, p := range r.parents {
+		found := false
+		for _, child := range p.children {
+			if child == r {
+				found = true
+				break
+			}
+		}
+		if !found {
+			err = fmt.Errorf("tucs.Region.SanityCheck: my parents disowned me")
+			fmt.Printf("** %s\n", err.Error())
+		}
+	}
+	
+	for _, c := range r.children {
+		found := false
+		for _, parent := range c.parents {
+			if parent == r {
+				found = true
+				break
+			}
+		}
+		if !found {
+			err = fmt.Errorf("tucs.Region.SanityCheck: my children disowned me")
+			fmt.Printf("** %s\n", err.Error())
+		}
+	}
+	return err
+}
+
+// Print dumps the tree structure of the Region into the out io.Writer
+// If depth == -1, the whole tree is displayed
+func (r *Region) Print(out io.Writer, depth int, nidx, pidx uint, rtype RegionType) {
+	fmt.Fprint(out, r.Name(nidx), r.Hash(nidx, pidx))
+	depth--
+
+	if depth != 0 {
+		for _, c := range r.Children(rtype) {
+			c.Print(out, depth, nidx, pidx, rtype)
+		}
+	}
+}
+
+// RegionFct allows to apply an item of work on each sub-region of a given Region.
+// See tucs.Region.IterRegion
 type RegionFct func(t RegionType, region *Region) error
 
 func (r *Region) IterRegions(t RegionType, fct RegionFct) error {

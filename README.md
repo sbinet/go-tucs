@@ -9,7 +9,14 @@ https://svnweb.cern.ch/trac/atlasoff/browser/TileCalorimeter/TileCalib/TileCalib
 Installation
 ------------
 
-    $ go get github.com/sbinet/go-tucs/cmd/go-tucs
+```
+$ go get github.com/sbinet/go-tucs/cmd/go-tucs
+```
+
+Documentation
+-------------
+
+http://go.pkgdoc.org/github.com/sbinet/go-tucs/pkg/tucs
 
 
 Example
