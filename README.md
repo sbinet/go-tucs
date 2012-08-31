@@ -18,6 +18,20 @@ Documentation
 
 http://go.pkgdoc.org/github.com/sbinet/go-tucs/pkg/tucs
 
+Notes
+-----
+
+You'll need ``go-croot`` to be able to read ``ROOT`` files.
+``go-croot`` is go-get-able like so:
+```
+$ go get github.com/sbinet/go-croot
+```
+
+``go-croot`` needs itself ``croot``, a subset of the ``ROOT`` API
+exposed thru ``C``.
+Instructions on how to install ``croot`` are here:
+ http://github.com/sbinet/croot
+ 
 
 Example
 -------
