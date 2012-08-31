@@ -27,7 +27,7 @@ You'll need ``go-croot`` to be able to read ``ROOT`` files.
 $ go get github.com/sbinet/go-croot
 ```
 
-``go-croot`` needs itself ``croot``, a subset of the ``ROOT`` API
+``go-croot`` itself needs ``croot``, a subset of the ``ROOT`` API
 exposed thru ``C``.
 Instructions on how to install ``croot`` are here:
  http://github.com/sbinet/croot
