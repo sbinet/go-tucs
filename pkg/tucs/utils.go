@@ -9,4 +9,13 @@ func in_intslice(val int, slice []int) bool {
 	return false
 }
 
+// idx_intslice returns the index in slice of the first element equal to val
+func idx_intslice(val int, slice []int) int {
+	for i, v := range slice {
+		if v == val {
+			return i
+		}
+	}
+	return -1
+}
 // EOF

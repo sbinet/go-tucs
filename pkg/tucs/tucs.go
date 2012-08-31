@@ -80,7 +80,7 @@ func TileCal(useMBTS, useSpecialEBmods bool) *Region {
 	// Level 1: tilecal and its partitions
 
 	rtype := Readout
-	det := NewRegion(rtype, "TILECAL")
+	tilecal := NewRegion(rtype, "TILECAL")
 
 	// there are 4 partitions
 	partitions := []*Region{
@@ -90,9 +90,9 @@ func TileCal(useMBTS, useSpecialEBmods bool) *Region {
 		NewRegion(rtype, "EBC"),
 	}
 
-	det.SetChildren(partitions)
+	tilecal.SetChildren(partitions)
 	for _, partition := range partitions {
-		partition.SetParent(det)
+		partition.SetParent(tilecal)
 	}
 
 	// Level 2: tell the partitions what they have as modules
@@ -108,7 +108,7 @@ func TileCal(useMBTS, useSpecialEBmods bool) *Region {
 	chCrack["EBA"] = make(RegionMap)
 	chCrack["EBC"] = make(RegionMap)
 
-	for _, partition := range det.Children(Readout) {
+	for _, partition := range tilecal.Children(Readout) {
 		// construct each of the 64 modules
 		modules := make([]*Region, 0, 64)
 		for i := 0; i < 64; i++ {
@@ -122,7 +122,7 @@ func TileCal(useMBTS, useSpecialEBmods bool) *Region {
 
 		// make them children of partition
 		partition.SetChildren(modules)
-		for _, m := range modules {
+		for _, m := range modules {//partition.Children(Readout) {
 			m.SetParent(partition)
 		}
 
@@ -212,8 +212,8 @@ func TileCal(useMBTS, useSpecialEBmods bool) *Region {
 	} // partitions
 
 	// For each module, create the cells ('physical' part of detector tree)
-	for _, partition := range det.Children(Readout) {
-		for _, module := range det.Children(Readout) {
+	for _, partition := range tilecal.Children(Readout) {
+		for _, module := range partition.Children(Readout) {
 			pname := partition.Name(0)
 			mname := module.Name(0)
 			samples := []*Region{}
@@ -248,7 +248,7 @@ func TileCal(useMBTS, useSpecialEBmods bool) *Region {
 							// Draw D0 cell on A-side
 							add_tower(0, 2, 4, 6)
 						} else {
-							add_tower(0, 2, 4, 6)
+							add_tower(2, 4, 6)
 						}
 					}
 				} else {
@@ -318,7 +318,7 @@ func TileCal(useMBTS, useSpecialEBmods bool) *Region {
 			} // samples
 		} // modules
 	} // partitions
-	return det
+	return tilecal
 }
 
 // EOF

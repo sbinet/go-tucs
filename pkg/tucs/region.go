@@ -42,6 +42,10 @@ type Region struct {
 func NewRegion(typ RegionType, name string, names ...string) *Region {
 	r := &Region{
 		names: []string{name},
+		parents: make([]*Region, 0),
+		children: make([]*Region, 0),
+		hashes: make(map[string]string),
+		events: make([]Event, 0),
 		Type:  typ,
 	}
 	r.names = append(r.names, names...)
@@ -55,17 +59,17 @@ func (r *Region) Contains(rhs *Region) bool {
 }
 
 func (r *Region) Hash(nidx, pidx uint) string {
-	key := fmt.Sprintf("%d_%s_%d", nidx, r.Type, pidx)
-	if hash, ok := r.hashes[key]; ok {
+	k := fmt.Sprintf("%d_%s_%d", nidx, r.Type, pidx)
+	if hash, ok := r.hashes[k]; ok {
 		return hash
 	}
 	parent := r.Parent(r.Type, pidx)
 	if parent != nil {
-		r.hashes[key] = parent.Hash(nidx, pidx) + "_" + r.Name(nidx)
+		r.hashes[k] = parent.Hash(nidx, pidx) + "_" + r.Name(nidx)
 	} else {
-		r.hashes[key] = r.Name(nidx)
+		r.hashes[k] = r.Name(nidx)
 	}
-	return r.hashes[key]
+	return r.hashes[k]
 }
 
 func (r *Region) Name(idx uint) string {
@@ -177,7 +181,8 @@ func (r *Region) Number(nidx, pidx uint) []int {
 		// get module
 		mid, err := strconv.ParseInt(hash[1][1:], 10, 64)
 		if err != nil {
-			panic("tucs.Region.Number: "+err.Error())
+			panic(fmt.Sprintf("tucs.Region.Number: %v\n (hash: %v %v)",
+				err.Error(), hash, hashstr))
 		}
 		nbr = append(nbr, int(mid))
 	}
@@ -220,8 +225,100 @@ func (r *Region) Number(nidx, pidx uint) []int {
 }
 
 func (r *Region) Channels(useSpecialEBmods bool) []int {
-	//TODO.
-	chans := []int{}
+	if strings.Contains(r.Name(0), "MBTS") {
+		return []int{0}
+	} else if !strings.Contains(r.Name(0), "t") {
+		fmt.Printf("**tucs.Region.Channels only meaningful for tower regions\n")
+		return []int{}
+	}
+	type chan_t []int
+	type chans_t []chan_t
+	cell2chan := [][]chans_t{
+		// LB
+		{
+			// A
+			chans_t{
+				{1,4},{5,8},{9,10},{15,18},{19,20},{23,26},{29,32},{35,38},{37,36},{45,46},
+			},
+			// BC
+			chans_t{
+				{3,2},{7,6},{11,12},{17,16},{21,22},{27,28},{33,34},{39,40},{47,42},
+			},
+			// D
+			chans_t{
+				{-1,0},{},{13,14},{},{25,24},{},{41,44},
+			},
+			// E
+			chans_t{
+				
+			},
+		},
+		// EB
+		{
+			// A
+			chans_t{
+				{},{},{},{},{},{},{},{},{},{},{},{7,6},{11,10},{21,20},{32,31},{40,41},
+			},
+			// BC
+			chans_t{
+				{},{},{},{},{},{},{},{},{},{5,4},{9,8},{15,14},{23,22},{35,30},{36,39},
+			},
+			// D
+			chans_t{
+				{},{},{},{},{},{},{},{},{3,2},{},{17,16},{},{37,38},
+			},
+			// E
+			chans_t{
+				{},{},{},{},{},{},{},{},{},{},{13},{12},{},{1},{},{0},
+			},
+		},
+	}
+	nbr := r.Number(0,0)
+	part := nbr[0]
+	module := nbr[1]
+	sample := nbr[2]
+	tower := nbr[3]
+	barrel := 0
+	if part <= 2 {
+		barrel = 0
+	} else {
+		barrel = 1
+	}
+	
+	// special modules: EBA15 and EBC18
+	if useSpecialEBmods && ((part==3 && module==15) || (part==4 && module==18)) {
+		// fixit
+		cell2chan = [][]chans_t{
+			// LB
+			{},
+			// EB
+			{
+				// A
+				chans_t{
+					{},{},{},{},{},{},{},{},{},{},{},{7,6},{11,10},{21,20},{32,31},{40,41},
+				},
+				
+				// BC
+				chans_t{
+					{},{},{},{},{},{},{},{},{},{5,4},{9,8},{15,14},{23,22},{35,30},{36,39},
+				},
+
+				// D - D5 (or D10) merged with D4 (or D08)
+				chans_t{
+					{},{},{},{},{},{},{},{},{},{},{17,16},{},{37,38},
+				},
+
+				// E - E3, E4 -> chan 18, 19
+				chans_t{
+					{},{},{},{},{},{},{},{},{},{},{13},{12},{},{19},{},{18},
+				},
+			},
+		}
+	}
+	ch := cell2chan[barrel][sample][tower]
+	// copy to prevent from pinning these huge slices...
+	chans := make([]int, len(ch))
+	copy(chans, ch)
 	return chans
 }
 
@@ -256,19 +353,117 @@ func (r *Region) EtaPhi() (eta, phi float64, err error) {
 	return
 }
 
+// MBTSType checks if a module has MBTS connected to channel 0 and whether the
+// crack scintillator is missing.
+// It returns:
+//  0 if no MBTS
+//  1 if the MBTS is present but the crack missing
+//  2 if the MBTS is present and the crack present
 func (r *Region) MBTSType() int {
-	//TODO
-	return 0
+	nbr := r.Number(0,0)
+	if len(nbr) < 2 {
+		panic("tucs.Region.MBTSType: this should only be called at the module level or lower")
+	}
+	part := nbr[0]
+	module := nbr[1]
+
+	switch part {
+	case 3:
+		if in_intslice(module, 
+			[]int{3,12,23,30,35,44,53,60}) {
+			return 1
+		} else if in_intslice(module,
+			[]int{4,13,24,31,36,45,54,61}) {
+			return 2
+		} else {
+			return 0
+		}
+	case 4:
+		if in_intslice(module, 
+			[]int{4,13,20,28,37,45,54,61}) {
+			return 1
+		} else if in_intslice(module,
+			[]int{5,12,19,27,36,44,55,62}) {
+			return 2
+		} else {
+			return 0
+		}
+	default:
+		return 0
+	}
+	panic("unreachable")
 }
 
+// MBTSName returns a stub name consistent with L1 trigger name
 func (r *Region) MBTSName() string {
-	//TODO
-	return "<MBTSName>"
+	nbr := r.Number(0,0)
+	if len(nbr) < 2 {
+		panic("tucs.Region.MBTSName: this should only be called at the module level or lower")
+	}
+	part := nbr[0]
+	module := nbr[1]
+	name := []string{}
+	switch part {
+	case 3:
+		name = append(name, "A")
+		idx := idx_intslice(module, []int{4,13,24,31,36,44,53,61,03,12,23,30,35,45,54,60})
+		if idx >= 0 {
+			// FIXME: should the format be %02d instead ?
+			name = append(name, fmt.Sprintf("%d", idx))
+		} else {
+			panic("tucs.Region.MBTSName: invalid index or module")
+		}
+
+	case 4:
+		name = append(name, "C")
+		idx := idx_intslice(module, []int{5,13,20,28,37,45,55,62,04,12,19,27,36,44,54,61})
+		if idx >= 0 {
+			// FIXME: should the format be %02d instead ?
+			name = append(name, fmt.Sprintf("%d", idx))
+		} else {
+			panic("tucs.Region.MBTSName: invalid index or module")
+		}
+
+	}
+	return strings.Join(name, "")
 }
 
+// CrackPartner returns the module name of the module partner with which that
+// region shares the crack scintillator.
 func (r *Region) CrackPartner() string {
-	//TODO
-	return "<CrackPartner>"
+	nbr := r.Number(0,0)
+	if len(nbr) < 2 {
+		panic("tucs.Region.CrackPartner: this should only be called at the module level or lower")
+	}
+	part := nbr[0]
+	module := nbr[1]
+	name := ""
+
+	pairs := [][]int{}
+	switch part {
+	case 3:
+		pairs = [][]int{
+			{3,4},{12,13},{23,24},{30,31},{35,36},{44,45},{53,54},{60,61},
+		}
+
+	case 4:
+		pairs = [][]int{
+			{4,5},{13,12},{20,19},{28,27},{37,36},{45,44},{54,55},{61,62},
+		}
+
+	default:
+	}
+
+	for _,v := range pairs {
+		if module == v[0] {
+			name = fmt.Sprintf("m%02d", v[1])
+			break
+		} else if module == v[1] {
+			name = fmt.Sprintf("m%02d", v[0])
+			break
+		}
+	}
+	return name
 }
 
 // EOF
