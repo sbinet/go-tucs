@@ -276,7 +276,6 @@ func (w *filterWorker) date_prog(run, run2 string) []int64 {
 	}
 	defer db.Close()
 
-	var stmt *sql.Stmt = nil
 	query := []string{}
 	args := []interface{}{}
 
@@ -294,6 +293,8 @@ func (w *filterWorker) date_prog(run, run2 string) []int64 {
 			
 		}
 	}
+	//var stmt *sql.Stmt = nil
+	
 	return iruns
 }
 
