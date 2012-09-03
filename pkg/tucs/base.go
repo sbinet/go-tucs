@@ -41,11 +41,12 @@ func (b *Base) InitHistFile(fname string) error {
 }
 
 func (b *Base) ProcessStart() error {
-	fmt.Printf("--process-start--\n")
+	//fmt.Printf("--process-start--\n")
 	return nil
 }
 
 func (b *Base) ProcessStop() error {
+	//fmt.Printf("--process-stop--\n")
 	return nil
 }
 
