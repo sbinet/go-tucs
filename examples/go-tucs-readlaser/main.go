@@ -15,14 +15,17 @@ func main() {
 
 	{
 		cfg := tucs.FilterCfg{
-			Runs: []string{"-1 week",},
-			Type: tucs.Readout,
-			Region: "EBC_m62_c37_highgain",
+			Runs:    []string{"-1 week"},
+			Type:    tucs.Readout,
+			Region:  "EBC_m62_c37_highgain",
 			RunType: "Las",
 		}
 		app.AddWorker(tucs.NewFilter(cfg))
 	}
-	app.AddWorker(wtucs.Print(tucs.Readout, "", "", wtucs.PrintCfg{}))
+	{
+		cfg := wtucs.PrintCfg{}
+		app.AddWorker(wtucs.Print(tucs.Readout, cfg))
+	}
 
 	err := app.Run()
 	if err != nil {
