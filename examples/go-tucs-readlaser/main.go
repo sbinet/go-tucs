@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/sbinet/go-tucs/pkg/tucs"
+	"github.com/sbinet/go-tucs/pkg/tucs/workers"
 )
 
 func main() {
@@ -21,6 +22,7 @@ func main() {
 		}
 		app.AddWorker(tucs.NewFilter(cfg))
 	}
+	app.AddWorker(wtucs.Print(tucs.Readout, "", "", wtucs.PrintCfg{}))
 
 	err := app.Run()
 	if err != nil {
