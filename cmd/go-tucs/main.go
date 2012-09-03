@@ -7,7 +7,10 @@ import (
 )
 
 func main() {
-	app := tucs.NewApp(true, true)
+	const useMBTS = true
+	const useSpecialEBmods = true
+
+	app := tucs.NewApp(useMBTS, useSpecialEBmods)
 
 	app.AddWorker(
 		PrintWorker(tucs.Readout),
