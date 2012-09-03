@@ -276,9 +276,23 @@ func (w *filterWorker) date_prog(run, run2 string) []int64 {
 	}
 	defer db.Close()
 
+	var stmt *sql.Stmt = nil
+	query := []string{}
+	args := []interface{}{}
+
 	if w.run_type == "Las" {
 		// special treatment for LASER
-		//datequery
+		if w.two_inputs {
+			query = append(query, "date>? and date<?")
+			args = append(args, date, date2)
+		} else {
+			query = append(query, "date>?")
+			args = append(args, date)
+		}
+
+		if w.filter == "" || w.filter == " " {
+			
+		}
 	}
 	return iruns
 }
