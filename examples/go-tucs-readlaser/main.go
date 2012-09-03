@@ -16,11 +16,20 @@ func main() {
 	{
 		cfg := tucs.FilterCfg{
 			Runs:    []string{"-1 week"},
-			Type:    tucs.Readout,
 			Region:  "EBC_m62_c37_highgain",
 			RunType: "Las",
+			UseDateProg: true,
+			//Verbose: false,
+			KeepOnlyActive: false,
+			//Filter: "",
+			Amp: 23000.,
+			// GetLast: false,
+			UpdateSpecial: true,
+			// AllowC10Errors: false,
+			// CsComment: "",
+			// TwoInput: false,
 		}
-		app.AddWorker(tucs.NewFilter(cfg))
+		app.AddWorker(tucs.NewFilter(tucs.Readout, cfg))
 	}
 	{
 		cfg := wtucs.PrintCfg{}
