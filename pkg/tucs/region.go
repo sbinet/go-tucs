@@ -74,6 +74,10 @@ func (r *Region) Contains(rhs *Region) bool {
 	return false
 }
 
+func (r *Region) Events() []Event {
+	return r.events
+}
+
 func (r *Region) Hash(nidx, pidx uint) string {
 	k := fmt.Sprintf("%d_%s_%d", nidx, r.Type, pidx)
 	if hash, ok := r.hashes[k]; ok {
