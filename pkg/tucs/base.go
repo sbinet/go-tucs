@@ -16,22 +16,27 @@ type Base struct {
 func NewBase(rtype RegionType) Base {
 	return Base{
 		HistFile: nil,
-		rtype: rtype,
+		rtype:    rtype,
 	}
 }
 
 // InitHistFile grabs the ROOT file 'fname' and makes it the current gDirectory
-// FIXME: wrap croot.GRoot
 func (b *Base) InitHistFile(fname string) error {
 	var err error
 	const compress = 1
 	const netopt = 0
 
-	hfile := croot.OpenFile(fname, "recreate", "TUCS histogram", compress, netopt)
+	hfile := croot.GRoot.GetFile(fname)
+	if hfile == nil {
+		hfile = croot.OpenFile(fname, "recreate", "TUCS histogram", compress, netopt)
+	}
 	if hfile == nil {
 		return fmt.Errorf("tucs.Base: could not open file [%s]", fname)
 	}
 	b.HistFile = hfile
+	if !b.HistFile.Cd("") {
+		return fmt.Errorf("tucs.Base: could not make [%s] the current directory", fname)
+	}
 	return err
 }
 

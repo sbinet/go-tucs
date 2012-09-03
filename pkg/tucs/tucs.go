@@ -20,6 +20,7 @@ type App struct {
 	detector *Region
 }
 
+// NewApp creates a new tucs application
 func NewApp(useMBTS, useSpecialEBmods bool) *App {
 	app := &App{
 		workers:  []Worker{},

@@ -10,7 +10,7 @@ Installation
 ------------
 
 ```
-$ go get github.com/sbinet/go-tucs/cmd/go-tucs
+$ go get github.com/sbinet/go-tucs/examples/go-tucs-helloworld
 ```
 
 Documentation
@@ -37,7 +37,7 @@ Example
 -------
 
 ```
-$ go-tucs
+$ go-tucs-helloworld
 Welcome to Go-TUCS (pid=85032). Building detector tree...
 Constructing TileCal detector tree:
     MBTS mapping enabled
@@ -73,7 +73,7 @@ python macros/examples/01_hello_world.py  36.69s user 0.68s system 97% cpu 38.21
 The `go` one:
 
 ```
-$ time (go get go-tucs && go-tucs)
+$ time (go get github.com/sbinet/go-tucs/examples/go-tucs-helloworld && go-tucs-helloworld)
 [...]
 running [*main.printWorker]...
 ::worker-start...
@@ -81,7 +81,7 @@ running [*main.printWorker]...
 ::worker-stop...
   processed [29817] region(s) of type [readout]
 ::worker-stop... [done]
-( go get . && go-tucs; )  1.32s user 0.05s system 99% cpu 1.387 total
+( go get . && go-tucs-helloworld; )  1.32s user 0.05s system 99% cpu 1.387 total
 ```
 
 so, even when recompiling the whole `tucs` package, it still beats the `python` version hands down.

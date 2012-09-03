@@ -9,6 +9,7 @@ import (
 )
 
 type RegionType uint
+
 const (
 	Readout RegionType = iota
 	Physical
@@ -37,20 +38,20 @@ func (rt RegionType) String() string {
 // One can also call the Hash method to get a unique location for this region in
 // detector geometry tree.
 type Region struct {
-	names    []string
+	names []string
 	// the set of parent region(s) this region is attached to.
-	parents  []*Region
+	parents []*Region
 	// the set of children regions this region is made of.
 	children []*Region
 	// hashes stores a unique identifier for each region.
-	hashes   map[string]string
+	hashes map[string]string
 	// events is a list of Events associated with a particular region.
-	events   []Event
+	events []Event
 	// the Type for any given region says if region is part of the
 	// read-out electronics (partitions, modules, channels) or the physical
 	// geometry (cells, towers).
 	// In case of ambiguity, assume Readout.
-	Type     RegionType
+	Type RegionType
 }
 
 // NewRegion creates a new Region of type typ with primary name name
@@ -163,7 +164,7 @@ func (r *Region) SanityCheck() error {
 			fmt.Printf("** %s\n", err.Error())
 		}
 	}
-	
+
 	for _, c := range r.children {
 		found := false
 		for _, parent := range c.parents {
