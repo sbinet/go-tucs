@@ -78,6 +78,10 @@ func (r *Region) Events() []Event {
 	return r.events
 }
 
+func (r *Region) AddEvent(evt Event) {
+	r.events = append(r.events, evt)
+}
+
 func (r *Region) Hash(nidx, pidx uint) string {
 	k := fmt.Sprintf("%d_%s_%d", nidx, r.Type, pidx)
 	if hash, ok := r.hashes[k]; ok {
@@ -93,7 +97,10 @@ func (r *Region) Hash(nidx, pidx uint) string {
 }
 
 func (r *Region) Name(idx uint) string {
-	return r.names[idx]
+	if 0 <= idx && idx < uint(len(r.names)) {
+		return r.names[idx]
+	}
+	return r.names[0]
 }
 
 func (r *Region) Children(regtype RegionType) []*Region {
