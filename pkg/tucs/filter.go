@@ -62,6 +62,7 @@ func NewFilter(rtype RegionType, cfg FilterCfg) Worker {
 		run_type:        cfg.RunType,
 		flags:           make(map[int]interface{}),
 		two_inputs:      two_inputs,
+		amp:             cfg.Amp,
 	}
 
 	iruns := []int64{}
@@ -280,21 +281,57 @@ func (w *filterWorker) date_prog(run, run2 string) []int64 {
 	args := []interface{}{}
 
 	if w.run_type == "Las" {
+		query = append(query, "select run from tile.comminfo where")
 		// special treatment for LASER
 		if w.two_inputs {
-			query = append(query, "date>? and date<?")
+			query = append(query, "date>'?' and date<'?'")
 			args = append(args, date, date2)
 		} else {
-			query = append(query, "date>?")
+			query = append(query, "date>'?'")
 			args = append(args, date)
 		}
-
+		query = append(query, "and")
 		if w.filter == "" || w.filter == " " {
-			
+			query = append(query, "((lasfilter='6' and events>10000) or (lasfilter='8' and events>100000))")
+		} else {
+			switch w.filter {
+			case "6":
+				query = append(query, ` (lasfilter="6" and events>10000)`)
+			case "8":
+				query = append(query, ` (lasfilter="8" and events>100000)`)
+			default:
+				query = append(query, `lasfilter='?'`)
+				args = append(args, w.filter)
+			}
 		}
+
+		query = append(query, `and lasreqamp='?' and type ='Las' and not (recofrags like '%%005%%' or recofrags like '%%50%%' or lasshopen=1 ) and comments is NULL`)
+		args = append(args, w.amp)
+
+	} else if w.run_type == "cesium" {
+		query = append(query, `select run from tile.runDescr where time>"?" and module<65`)
+		args = append(args, date.String())
+		//if w.cs
 	}
 	//var stmt *sql.Stmt = nil
-	
+
+	fmt.Printf(strings.Join(query, " ") + "\n")
+	fmt.Printf("%v %v\n", len(args), args)
+	//rows, err := db.Query(strings.Join(query, " "), args)
+	rows, err := db.Query(`select run from tile.comminfo where date>'2012-08-27' and ((lasfilter='6' and events>10000) or (lasfilter='8' and events>100000)) and lasreqamp='23000' and type ='Las' and not (recofrags like '%005%' or recofrags like '%50%' or lasshopen=1 ) and  comments is NULL`)
+	if err != nil {
+		fmt.Printf("tucs.Filter.QuerySql: %v\n", err.Error())
+		panic(err.Error())
+	}
+	fmt.Printf("...cols...\n")
+	cols, err := rows.Columns()
+	if err != nil {
+		fmt.Printf("tucs.Filter.Columns: %v\n", err.Error())
+		panic(err.Error())
+	}
+	fmt.Printf("cols: %v\n", cols)
+	// for rows.Next() {
+	// }
 	return iruns
 }
 
