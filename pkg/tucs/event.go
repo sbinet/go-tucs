@@ -17,6 +17,13 @@ type Run struct {
 	Data   interface{}
 }
 
+func (r *Run) String() string {
+	return fmt.Sprintf(
+		"Run{Number: %v, Type: %v, Time: %v, Data: %v}",
+		r.Number, r.Type, r.Time, r.Data,
+	)
+}
+
 // runList is a slice of Runs which implements sort.Interface
 // TODO: make it a slice of *pointers* to Run ? (if too slow)
 type runList struct {
