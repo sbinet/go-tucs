@@ -30,6 +30,10 @@ func NewCalibBase(rtype RegionType, workdir string) CalibBase {
 	return w
 }
 
+func (w *CalibBase) Dir() string {
+	return w.workdir
+}
+
 func (w *CalibBase) FileTree(file, tree string) (*croot.File, *croot.Tree) {
 	var f *croot.File = nil
 	var t *croot.Tree = nil
