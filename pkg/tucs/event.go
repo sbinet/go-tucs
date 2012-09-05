@@ -6,16 +6,18 @@ import (
 	"time"
 )
 
+type DataMap map[string]interface{}
+
 type Event struct {
 	Run  Run
-	Data map[string]interface{}
+	Data DataMap
 }
 
 type Run struct {
 	Type   string
 	Number int64
 	Time   time.Time
-	Data   map[string]interface{}
+	Data   DataMap
 }
 
 func (r *Run) String() string {

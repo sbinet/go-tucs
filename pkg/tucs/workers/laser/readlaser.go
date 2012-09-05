@@ -13,7 +13,7 @@ type readlaser struct {
 	nevtcut int
 	diode   int
 	boxpar  bool
-	runmap  map[int64]interface{}
+	runmap  map[int64][]tucs.Event
 	runs    []tucs.Run
 	verbose bool
 }
@@ -32,7 +32,7 @@ func ReadLaser(rtype tucs.RegionType, cfg ReadLaserCfg) tucs.Worker {
 		nevtcut:   10,
 		diode:     cfg.DiodeNbr,
 		boxpar:    cfg.BoxPar,
-		runmap:    make(map[int64]interface{}),
+		runmap:    make(map[int64][]tucs.Event),
 		runs:      make([]tucs.Run, 0),
 		verbose:   cfg.Verbose,
 	}
@@ -55,23 +55,20 @@ func (w *readlaser) ProcessStart() error {
 			tucs.Runs.Remove(run)
 		}
 	}
-	/*
-	        for run in run_list.getRunsOfType('Las'):
-	            filename = "%s/tileCalibLAS_%s_Las.0.root" % (self.processingDir,run.runNumber)
-	            if os.path.exists(filename):
-	                run.data['filename'] = os.path.basename(filename)
-	                self.run_list.append(run)
-	                self.run_dict[run.runNumber] = []
-	                print filename
-	            else:
-	                print 'not processed yet, removing ',run.runNumber
-	                run_list.remove(run)
-	#            filename = "%s/tileCalibLAS_%s_0.root" % (self.processingDir,run.runNumber)
-	#            if os.path.exists(filename):
-	#                run.data['filename'] = os.path.basename(filename)  
-	#                self.run_list.append(run)
-	#                continue
-	*/
+
+	return nil
+}
+
+func (w *readlaser) ProcessRegion(region *tucs.Region) error {
+
+	for _, evt := range region.Events() {
+		if evt.Run.Type != "Las" {
+			continue
+		}
+		if _, ok := evt.Run.Data["filename"]; ok {
+			w.runmap[evt.Run.Number] = append(w.runmap[evt.Run.Number], evt)
+		}
+	}
 	return nil
 }
 

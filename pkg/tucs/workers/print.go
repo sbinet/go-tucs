@@ -34,7 +34,7 @@ func Print(rtype tucs.RegionType, cfg PrintCfg) tucs.Worker {
 func (w *printWorker) ProcessRegion(region *tucs.Region) error {
 	var err error = nil
 
-	if w.cfg.Region != "" && !strings.Contains(region.Hash(0,0), w.cfg.Region) {
+	if w.cfg.Region != "" && !strings.Contains(region.Hash(0, 0), w.cfg.Region) {
 		return err
 	}
 
@@ -58,7 +58,7 @@ func (w *printWorker) ProcessRegion(region *tucs.Region) error {
 			printf("%v\n", evt.Data)
 		} else {
 			if w.cfg.PrintData {
-				for k,v := range evt.Data {
+				for k, v := range evt.Data {
 					if w.cfg.Data != "" {
 						if k == w.cfg.Data {
 							printf("%v: %v, ", k, v)

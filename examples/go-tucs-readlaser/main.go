@@ -49,10 +49,10 @@ func main() {
 
 	{
 		cfg := laser.ReadLaserCfg{
-			WorkDir: "/afs/cern.ch/user/t/tilecali/w0/ntuples/las",
+			WorkDir:  "/afs/cern.ch/user/t/tilecali/w0/ntuples/las",
 			DiodeNbr: -1,
-			BoxPar: false,
-			Verbose: false,
+			BoxPar:   false,
+			Verbose:  false,
 		}
 		app.AddWorker(laser.ReadLaser(tucs.Readout, cfg))
 	}

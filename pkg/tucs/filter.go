@@ -154,7 +154,7 @@ func NewFilter(rtype RegionType, cfg FilterCfg) Worker {
 							Type:   w.run_type,
 							Number: irun,
 							Time:   date,
-							Data:   nil,
+							Data:   make(DataMap),
 						})
 				}
 			} else {
@@ -162,8 +162,8 @@ func NewFilter(rtype RegionType, cfg FilterCfg) Worker {
 					Run{
 						Type:   w.run_type,
 						Number: irun,
-						Time:   time.Now(), //FIXME: find a better default ?
-						Data:   nil,
+						Time:   time.Unix(0, 0), //FIXME: better default ?
+						Data:   make(DataMap),
 					})
 			}
 		}
@@ -177,7 +177,7 @@ func NewFilter(rtype RegionType, cfg FilterCfg) Worker {
 			}
 			irun2 := int64(-1)
 			rtype := ""
-			date := time.Now()
+			date := time.Unix(0, 0) // FIXME: better default ?
 			digifrags := ""
 			if !rows.Next() {
 				irun2 = irun
@@ -191,7 +191,7 @@ func NewFilter(rtype RegionType, cfg FilterCfg) Worker {
 						Type:   rtype,
 						Number: irun2,
 						Time:   date,
-						Data:   nil,
+						Data:   make(DataMap),
 					})
 			}
 			if w.keep_only_active && (rtype == cfg.RunType || rtype == "") {
@@ -498,12 +498,12 @@ func (w *filterWorker) ProcessRegion(region *Region) error {
 			// 		}
 			// 	}
 			// 	for ievt, _ := range module.Events() {
-					
+
 			// 	}
 			// }
 		} else {
 			for _, run := range w.runlst {
-				hash := region.Hash(0,0)
+				hash := region.Hash(0, 0)
 				if w.keep_only_active && !w.is_active(hash, run.Number) {
 					if w.verbose {
 						fmt.Printf("Region not in readout, removing: %v\n",
@@ -514,17 +514,20 @@ func (w *filterWorker) ProcessRegion(region *Region) error {
 					if !strings.Contains(hash, "gain") {
 						continue
 					}
-					data := make(map[string]interface{})
+					data := make(DataMap)
 					data["region"] = hash
 					region.AddEvent(Event{Run: run, Data: data})
 				} else {
-					data := make(map[string]interface{})
+					data := make(DataMap)
 					data["region"] = hash
 					region.AddEvent(Event{Run: run, Data: data})
 				}
 			}
 		}
 	}
+	// update global run-list...
+	Runs = make([]Run, len(w.runlst))
+	copy(Runs, w.runlst)
 	return err
 }
 

@@ -1,5 +1,9 @@
 package tucs
 
+import (
+	"os"
+)
+
 func in_intslice(val int, slice []int) bool {
 	for _, v := range slice {
 		if v == val {
@@ -19,9 +23,16 @@ func idx_intslice(val int, slice []int) int {
 	return -1
 }
 
-// PathExists
+// PathExists returns whether the given file or directory exists or not.
 func PathExists(name string) bool {
-	//TODO
+	_, err := os.Stat(name)
+	if err == nil {
+		return true
+	}
+	if os.IsNotExist(err) {
+		return false
+	}
 	return false
 }
+
 // EOF
