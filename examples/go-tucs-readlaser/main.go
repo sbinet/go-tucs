@@ -20,7 +20,7 @@ func main() {
 			RunType: "Las",
 			UseDateProg: true,
 			//Verbose: false,
-			KeepOnlyActive: false,
+			KeepOnlyActive: true,
 			//Filter: "",
 			Amp: 23000.,
 			// GetLast: false,
