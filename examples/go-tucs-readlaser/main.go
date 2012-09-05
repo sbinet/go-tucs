@@ -16,9 +16,9 @@ func main() {
 
 	{
 		cfg := tucs.FilterCfg{
-			Runs:    []string{"-1 week"},
-			Region:  "EBC_m62_c37_highgain",
-			RunType: "Las",
+			Runs:        []string{"-1 week"},
+			Region:      "EBC_m62_c37_highgain",
+			RunType:     "Las",
 			UseDateProg: true,
 			//Verbose: false,
 			KeepOnlyActive: true,
@@ -36,10 +36,10 @@ func main() {
 	{
 		cfg := wtucs.PrintCfg{
 			PrintRunType: true,
-			PrintRunNbr: true,
-			PrintTime: true,
-			PrintData: true,
-			PrintRegion : true,
+			PrintRunNbr:  true,
+			PrintTime:    true,
+			PrintData:    true,
+			PrintRegion:  true,
 			//Verbose     : true,
 			//Region : "some region",  
 			//Data      : "some data",  
@@ -49,7 +49,10 @@ func main() {
 
 	{
 		cfg := laser.ReadLaserCfg{
-			
+			WorkDir: "/afs/cern.ch/user/t/tilecali/w0/ntuples/las",
+			DiodeNbr: -1,
+			BoxPar: false,
+			Verbose: false,
 		}
 		app.AddWorker(laser.ReadLaser(tucs.Readout, cfg))
 	}
@@ -57,10 +60,10 @@ func main() {
 	{
 		cfg := wtucs.PrintCfg{
 			PrintRunType: true,
-			PrintRunNbr: true,
-			PrintTime: true,
-			PrintData: true,
-			PrintRegion : true,
+			PrintRunNbr:  true,
+			PrintTime:    true,
+			PrintData:    true,
+			PrintRegion:  true,
 			//Verbose     : true,
 			//Region : "some region",  
 			//Data      : "some data",  

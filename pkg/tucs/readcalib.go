@@ -1,38 +1,12 @@
 package tucs
 
 import (
-	
+	"fmt"
+	//"os"
+	"path"
+
 	"github.com/sbinet/go-croot/pkg/croot"
 	)
-
-/*
-class ReadGenericCalibration(GenericWorker):
-    "The Generic Calibration Template"
-
-    tfile_cache = {}
-    processingDir = 'tmp'
-    
-    def getFileTree(self, fileName, treeName):
-        f, t = [None, None]
-
-        if self.tfile_cache.has_key(self.processingDir+fileName):
-            f, t = self.tfile_cache[self.processingDir+fileName]
-        else:
-            if os.path.exists(os.path.join(self.processingDir, fileName)) or 'rfio:/' == self.processingDir[0:6]:
-                f = TFile.Open(os.path.join(self.processingDir, fileName), "read")
-
-            if not f:
-                return [None, None]
-            
-            t = f.Get(treeName)
-            if not t:
-                print "Tree failed to be grabbed: " + fileName
-                return [None, None]
-
-            self.tfile_cache[self.processingDir+fileName] = [f, t]
-        
-        return [f, t]
-*/
 
 type centry struct {
 	file *croot.File
@@ -56,6 +30,32 @@ func NewCalibBase(rtype RegionType, workdir string) CalibBase {
 	return w
 }
 
+func (w *CalibBase) FileTree(file, tree string) (*croot.File, *croot.Tree) {
+	var f *croot.File = nil
+	var t *croot.Tree = nil
+
+	key := w.workdir+file
+	if c, ok := w.cache[key]; ok {
+		f = c.file
+		t = c.tree
+	} else {
+		fname := path.Join(w.workdir, file)
+		f = croot.OpenFile(fname, "read", "TUCS ROOT file", 1, 0)
+		if f != nil {
+			t = f.GetTree(tree)
+			if t == nil {
+				fmt.Printf("**error** tucs.FileTree failed to grab file=%s tree=%s\n",
+					file, tree)
+			} else {
+				w.cache[key] = centry{
+					file: f,
+					tree: t,
+				}
+			}
+		}
+	}
+	return f,t
+}
 // checks CalibBase implements tucs.Worker
 var _ Worker = (*CalibBase)(nil)
 
