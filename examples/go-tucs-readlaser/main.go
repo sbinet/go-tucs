@@ -5,6 +5,7 @@ import (
 
 	"github.com/sbinet/go-tucs/pkg/tucs"
 	"github.com/sbinet/go-tucs/pkg/tucs/workers"
+	"github.com/sbinet/go-tucs/pkg/tucs/workers/laser"
 )
 
 func main() {
@@ -31,8 +32,39 @@ func main() {
 		}
 		app.AddWorker(tucs.NewFilter(tucs.Readout, cfg))
 	}
+
 	{
-		cfg := wtucs.PrintCfg{}
+		cfg := wtucs.PrintCfg{
+			PrintRunType: true,
+			PrintRunNbr: true,
+			PrintTime: true,
+			PrintData: true,
+			PrintRegion : true,
+			//Verbose     : true,
+			//Region : "some region",  
+			//Data      : "some data",  
+		}
+		app.AddWorker(wtucs.Print(tucs.Readout, cfg))
+	}
+
+	{
+		cfg := wlaser.ReadLaserCfg{
+			
+		}
+		app.AddWorker(wlaser.ReadLaser(tucs.Readout, cfg))
+	}
+
+	{
+		cfg := wtucs.PrintCfg{
+			PrintRunType: true,
+			PrintRunNbr: true,
+			PrintTime: true,
+			PrintData: true,
+			PrintRegion : true,
+			//Verbose     : true,
+			//Region : "some region",  
+			//Data      : "some data",  
+		}
 		app.AddWorker(wtucs.Print(tucs.Readout, cfg))
 	}
 
