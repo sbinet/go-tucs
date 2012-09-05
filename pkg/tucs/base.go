@@ -12,7 +12,7 @@ type Base struct {
 	rtype    RegionType
 }
 
-// NewBase creates a new *Base worker reading for embedding
+// NewBase creates a new Base worker ready for embedding
 func NewBase(rtype RegionType) Base {
 	return Base{
 		HistFile: nil,

@@ -48,10 +48,10 @@ func main() {
 	}
 
 	{
-		cfg := wlaser.ReadLaserCfg{
+		cfg := laser.ReadLaserCfg{
 			
 		}
-		app.AddWorker(wlaser.ReadLaser(tucs.Readout, cfg))
+		app.AddWorker(laser.ReadLaser(tucs.Readout, cfg))
 	}
 
 	{
