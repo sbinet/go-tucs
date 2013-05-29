@@ -6,24 +6,22 @@ An experimental re-write of TUCS (TileCal Unified Calibration Software) in Go.
 https://twiki.cern.ch/twiki/bin/viewauth/Atlas/TileCalibrationTucs
 https://svnweb.cern.ch/trac/atlasoff/browser/TileCalorimeter/TileCalib/TileCalibAlgs/trunk/share/Tucs/src
 
-Installation
-------------
+## Installation
 
-```
+``` sh
 $ go get github.com/sbinet/go-tucs/examples/go-tucs-helloworld
 ```
 
-Documentation
--------------
+## Documentation
 
-http://go.pkgdoc.org/github.com/sbinet/go-tucs/pkg/tucs
+http://godoc.org/github.com/sbinet/go-tucs/pkg/tucs
 
-Notes
------
+## Notes
 
 You'll need ``go-croot`` to be able to read ``ROOT`` files.
 ``go-croot`` is go-get-able like so:
-```
+
+``` sh
 $ go get github.com/sbinet/go-croot
 ```
 
@@ -33,10 +31,9 @@ Instructions on how to install ``croot`` are here:
  http://github.com/sbinet/croot
  
 
-Example
--------
+## Example
 
-```
+``` sh
 $ go-tucs-helloworld
 Welcome to Go-TUCS (pid=85032). Building detector tree...
 Constructing TileCal detector tree:
@@ -52,12 +49,11 @@ running [*main.printWorker]...
 ```
 
 
-Performances comparisons
-------------------------
+## Performances comparisons
 
 The `python` version:
 
-```
+``` sh
 $ time python macros/examples/01_hello_world.py
 [...]
 Entering worker loop:
@@ -72,7 +68,7 @@ python macros/examples/01_hello_world.py  36.69s user 0.68s system 97% cpu 38.21
 
 The `go` one:
 
-```
+``` sh
 $ time (go get github.com/sbinet/go-tucs/examples/go-tucs-helloworld && go-tucs-helloworld)
 [...]
 running [*main.printWorker]...
