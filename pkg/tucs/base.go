@@ -3,12 +3,12 @@ package tucs
 import (
 	"fmt"
 
-	"github.com/sbinet/go-croot/pkg/croot"
+	"github.com/sbinet/go-croot"
 )
 
 // Base implements a basic tucs.Worker
 type Base struct {
-	HistFile *croot.File
+	HistFile croot.File
 	rtype    RegionType
 }
 

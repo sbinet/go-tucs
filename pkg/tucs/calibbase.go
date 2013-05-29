@@ -5,12 +5,12 @@ import (
 	//"os"
 	"path"
 
-	"github.com/sbinet/go-croot/pkg/croot"
+	"github.com/sbinet/go-croot"
 )
 
 type centry struct {
-	file *croot.File
-	tree *croot.Tree
+	file croot.File
+	tree croot.Tree
 }
 
 // CalibBase is a generic calibration worker with a cache of ROOT files/trees
@@ -34,9 +34,9 @@ func (w *CalibBase) Dir() string {
 	return w.workdir
 }
 
-func (w *CalibBase) FileTree(file, tree string) (*croot.File, *croot.Tree) {
-	var f *croot.File = nil
-	var t *croot.Tree = nil
+func (w *CalibBase) FileTree(file, tree string) (croot.File, croot.Tree) {
+	var f croot.File
+	var t croot.Tree
 
 	key := w.workdir + file
 	if c, ok := w.cache[key]; ok {

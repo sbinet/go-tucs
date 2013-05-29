@@ -41,8 +41,8 @@ func main() {
 			PrintData:    true,
 			PrintRegion:  true,
 			//Verbose     : true,
-			//Region : "some region",  
-			//Data      : "some data",  
+			//Region : "some region",
+			//Data      : "some data",
 		}
 		app.AddWorker(wtucs.Print(tucs.Readout, cfg))
 	}
@@ -65,8 +65,8 @@ func main() {
 			PrintData:    true,
 			PrintRegion:  true,
 			//Verbose     : true,
-			//Region : "some region",  
-			//Data      : "some data",  
+			//Region : "some region",
+			//Data      : "some data",
 		}
 		app.AddWorker(wtucs.Print(tucs.Readout, cfg))
 	}
