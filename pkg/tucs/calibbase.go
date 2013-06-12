@@ -5,7 +5,7 @@ import (
 	//"os"
 	"path"
 
-	"github.com/sbinet/go-croot"
+	"github.com/go-hep/croot"
 )
 
 type centry struct {
@@ -35,6 +35,7 @@ func (w *CalibBase) Dir() string {
 }
 
 func (w *CalibBase) FileTree(file, tree string) (croot.File, croot.Tree) {
+	var err error
 	var f croot.File
 	var t croot.Tree
 
@@ -44,8 +45,8 @@ func (w *CalibBase) FileTree(file, tree string) (croot.File, croot.Tree) {
 		t = c.tree
 	} else {
 		fname := path.Join(w.workdir, file)
-		f = croot.OpenFile(fname, "read", "TUCS ROOT file", 1, 0)
-		if f != nil {
+		f, err = croot.OpenFile(fname, "read", "TUCS ROOT file", 1, 0)
+		if f != nil && err == nil {
 			t = f.GetTree(tree)
 			if t == nil {
 				fmt.Printf("**error** tucs.FileTree failed to grab file=%s tree=%s\n",

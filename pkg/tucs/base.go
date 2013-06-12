@@ -3,7 +3,7 @@ package tucs
 import (
 	"fmt"
 
-	"github.com/sbinet/go-croot"
+	"github.com/go-hep/croot"
 )
 
 // Base implements a basic tucs.Worker
@@ -28,7 +28,10 @@ func (b *Base) InitHistFile(fname string) error {
 
 	hfile := croot.GRoot.GetFile(fname)
 	if hfile == nil {
-		hfile = croot.OpenFile(fname, "recreate", "TUCS histogram", compress, netopt)
+		hfile, err = croot.OpenFile(fname, "recreate", "TUCS histogram", compress, netopt)
+	}
+	if err != nil {
+		return err
 	}
 	if hfile == nil {
 		return fmt.Errorf("tucs.Base: could not open file [%s]", fname)
