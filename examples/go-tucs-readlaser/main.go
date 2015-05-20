@@ -3,9 +3,9 @@ package main
 import (
 	"log"
 
-	"github.com/sbinet/go-tucs/pkg/tucs"
-	"github.com/sbinet/go-tucs/pkg/tucs/workers"
-	"github.com/sbinet/go-tucs/pkg/tucs/workers/laser"
+	"github.com/sbinet/go-tucs/tucs"
+	"github.com/sbinet/go-tucs/tucs/workers"
+	"github.com/sbinet/go-tucs/tucs/workers/laser"
 )
 
 func main() {

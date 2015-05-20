@@ -14,7 +14,7 @@ $ go get github.com/sbinet/go-tucs/examples/go-tucs-helloworld
 
 ## Documentation
 
-http://godoc.org/github.com/sbinet/go-tucs/pkg/tucs
+http://godoc.org/github.com/sbinet/go-tucs/tucs
 
 ## Notes
 

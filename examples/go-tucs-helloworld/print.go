@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/sbinet/go-tucs/pkg/tucs"
+	"github.com/sbinet/go-tucs/tucs"
 )
 
 type printWorker struct {

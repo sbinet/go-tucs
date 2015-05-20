@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	"github.com/sbinet/go-tucs/pkg/tucs"
+	"github.com/sbinet/go-tucs/tucs"
 )
 
 func main() {

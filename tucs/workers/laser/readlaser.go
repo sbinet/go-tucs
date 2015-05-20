@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"path"
 
-	"github.com/sbinet/go-tucs/pkg/tucs"
+	"github.com/sbinet/go-tucs/tucs"
 )
 
 // readlaser is a tucs.Worker to read-laser data

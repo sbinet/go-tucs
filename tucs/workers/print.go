@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/sbinet/go-tucs/pkg/tucs"
+	"github.com/sbinet/go-tucs/tucs"
 )
 
 type PrintCfg struct {
