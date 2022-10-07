@@ -544,14 +544,16 @@ func (w *filterWorker) is_active(hash string, run int64) bool {
 	}
 
 	hex := uint16(0)
-	if strings.Contains(hash, "B") {
-		if strings.Contains(hash, "LBA") {
+	switch {
+	case strings.Contains(hash, "B"):
+		switch {
+		case strings.Contains(hash, "LBA"):
 			hex = uint16(0x1 << 8)
-		} else if strings.Contains(hash, "LBC") {
+		case strings.Contains(hash, "LBC"):
 			hex = uint16(0x2 << 8)
-		} else if strings.Contains(hash, "EBA") {
+		case strings.Contains(hash, "EBA"):
 			hex = uint16(0x3 << 8)
-		} else if strings.Contains(hash, "EBC") {
+		case strings.Contains(hash, "EBC"):
 			hex = uint16(0x4 << 8)
 		}
 		if strings.Contains(hash, "_m") {
@@ -569,10 +571,10 @@ func (w *filterWorker) is_active(hash string, run int64) bool {
 			hexstr := fmt.Sprintf("0x%x", hex)
 			return strings.Contains(w.flags[run], hexstr)
 		}
-	} else if hash == "TILECAL" {
+	case hash == "TILECAL":
 		return true
 
-	} else {
+	default:
 		fmt.Printf("**error** tucs.Filter: unknown hash: %v\n", hash)
 		return false
 	}
