@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	_ "github.com/ziutek/mymysql/godrv"
+	_ "github.com/go-sql-driver/mysql"
 )
 
 // filterWorker selects runs for TUCS to use.
@@ -124,7 +124,7 @@ func NewFilter(rtype RegionType, cfg FilterCfg) Worker {
 		//}
 	}
 
-	db, err := sql.Open("mymysql", "tcp:pcata007.cern.ch:3306*tile/reader/")
+	db, err := sql.Open("mysql", "tcp:pcata007.cern.ch:3306*tile/reader/")
 	if err != nil {
 		panic("tucs.Filter.OpenSql: " + err.Error())
 	}
