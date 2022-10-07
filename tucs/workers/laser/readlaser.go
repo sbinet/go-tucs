@@ -74,5 +74,3 @@ func (w *readlaser) ProcessRegion(region *tucs.Region) error {
 
 // check readlaser implements the tucs.Worker interface
 var _ tucs.Worker = (*readlaser)(nil)
-
-// EOF

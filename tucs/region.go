@@ -431,9 +431,10 @@ func (r *Region) EtaPhi() (eta, phi float64, err error) {
 // MBTSType checks if a module has MBTS connected to channel 0 and whether the
 // crack scintillator is missing.
 // It returns:
-//  0 if no MBTS
-//  1 if the MBTS is present but the crack missing
-//  2 if the MBTS is present and the crack present
+//
+//	0 if no MBTS
+//	1 if the MBTS is present but the crack missing
+//	2 if the MBTS is present and the crack present
 func (r *Region) MBTSType() int {
 	nbr := r.Number(0, 0)
 	if len(nbr) < 2 {
@@ -540,5 +541,3 @@ func (r *Region) CrackPartner() string {
 	}
 	return name
 }
-
-// EOF

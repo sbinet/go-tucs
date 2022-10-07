@@ -4,7 +4,7 @@ import (
 	"log"
 
 	"github.com/sbinet/go-tucs/tucs"
-	"github.com/sbinet/go-tucs/tucs/workers"
+	wtucs "github.com/sbinet/go-tucs/tucs/workers"
 	"github.com/sbinet/go-tucs/tucs/workers/laser"
 )
 
@@ -76,5 +76,3 @@ func main() {
 		log.Fatal(err)
 	}
 }
-
-// EOF

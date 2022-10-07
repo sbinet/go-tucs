@@ -69,5 +69,3 @@ func (w *CalibBase) FileTree(file, tree string) (*groot.File, rtree.Tree) {
 
 // checks CalibBase implements tucs.Worker
 var _ Worker = (*CalibBase)(nil)
-
-// EOF

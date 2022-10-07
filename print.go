@@ -41,5 +41,3 @@ func (w *printWorker) ProcessRegion(region *tucs.Region) error {
 
 // check printWorker satisfies the tucs.Worker interface
 var _ tucs.Worker = (*printWorker)(nil)
-
-// EOF

@@ -43,7 +43,7 @@ func (w *printWorker) ProcessRegion(region *tucs.Region) error {
 	}
 
 	printf := fmt.Printf
-	for i, _ := range region.Events() {
+	for i := range region.Events() {
 		evt := &region.Events()[i]
 		if w.cfg.PrintRunType {
 			printf("%v, ", evt.Run.Type)
@@ -76,5 +76,3 @@ func (w *printWorker) ProcessRegion(region *tucs.Region) error {
 
 // check printWorker satisfies the tucs.Worker interface
 var _ tucs.Worker = (*printWorker)(nil)
-
-// EOF

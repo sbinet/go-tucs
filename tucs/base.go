@@ -57,5 +57,3 @@ func (b *Base) RegionType() RegionType {
 
 // checks Base implements tucs.Worker
 var _ Worker = (*Base)(nil)
-
-// EOF

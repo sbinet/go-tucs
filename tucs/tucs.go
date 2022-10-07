@@ -321,5 +321,3 @@ func TileCal(useMBTS, useSpecialEBmods bool) *Region {
 	} // partitions
 	return tilecal
 }
-
-// EOF

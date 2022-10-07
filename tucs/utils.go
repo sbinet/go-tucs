@@ -34,5 +34,3 @@ func PathExists(name string) bool {
 	}
 	return false
 }
-
-// EOF

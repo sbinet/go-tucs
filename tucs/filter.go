@@ -583,5 +583,3 @@ func (w *filterWorker) is_active(hash string, run int64) bool {
 
 // check filterWorker implements tucs.Worker
 var _ Worker = (*filterWorker)(nil)
-
-// EOF

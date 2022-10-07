@@ -83,5 +83,3 @@ func (r *RunList) Remove(run Run) {
 	*r = make([]Run, len(lst))
 	copy(*r, lst)
 }
-
-// EOF
