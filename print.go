@@ -35,7 +35,7 @@ func (w *printWorker) ProcessStop() error {
 
 func (w *printWorker) ProcessRegion(region *tucs.Region) error {
 	//fmt.Printf("::process-region [%s]...\n", region.Name(0))
-	w.nregions += 1
+	w.nregions++
 	return nil
 }
 

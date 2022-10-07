@@ -538,7 +538,7 @@ func (w *filterWorker) is_active(hash string, run int64) bool {
 		return true
 	} else {
 		if len(v) == 0 {
-			fmt.Printf("flags[%s]=%v\n", run, v)
+			fmt.Printf("flags[%d]=%v\n", run, v)
 			return true
 		}
 	}
