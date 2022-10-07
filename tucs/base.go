@@ -3,12 +3,12 @@ package tucs
 import (
 	"fmt"
 
-	"github.com/go-hep/croot"
+	"go-hep.org/x/hep/groot"
 )
 
 // Base implements a basic tucs.Worker
 type Base struct {
-	HistFile croot.File
+	HistFile *groot.File
 	rtype    RegionType
 }
 
@@ -22,25 +22,19 @@ func NewBase(rtype RegionType) Base {
 
 // InitHistFile grabs the ROOT file 'fname' and makes it the current gDirectory
 func (b *Base) InitHistFile(fname string) error {
-	var err error
-	const compress = 1
-	const netopt = 0
-
-	hfile := croot.GRoot.GetFile(fname)
-	if hfile == nil {
-		hfile, err = croot.OpenFile(fname, "recreate", "TUCS histogram", compress, netopt)
-	}
+	hfile, err := groot.Open(fname)
 	if err != nil {
-		return err
+		hfile, err = groot.Create(fname)
+		if err != nil {
+			return fmt.Errorf("tucs: could not create TUCS ROOT file %q: %w", fname, err)
+		}
 	}
 	if hfile == nil {
-		return fmt.Errorf("tucs.Base: could not open file [%s]", fname)
+		return fmt.Errorf("tucs: could not open file %q", fname)
 	}
 	b.HistFile = hfile
-	if !b.HistFile.Cd("") {
-		return fmt.Errorf("tucs.Base: could not make [%s] the current directory", fname)
-	}
-	return err
+
+	return nil
 }
 
 func (b *Base) ProcessStart() error {

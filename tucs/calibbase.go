@@ -1,16 +1,17 @@
 package tucs
 
 import (
-	"fmt"
+
 	//"os"
 	"path"
 
-	"github.com/go-hep/croot"
+	"go-hep.org/x/hep/groot"
+	"go-hep.org/x/hep/groot/rtree"
 )
 
 type centry struct {
-	file croot.File
-	tree croot.Tree
+	file *groot.File
+	tree rtree.Tree
 }
 
 // CalibBase is a generic calibration worker with a cache of ROOT files/trees
@@ -34,30 +35,34 @@ func (w *CalibBase) Dir() string {
 	return w.workdir
 }
 
-func (w *CalibBase) FileTree(file, tree string) (croot.File, croot.Tree) {
-	var err error
-	var f croot.File
-	var t croot.Tree
+func (w *CalibBase) FileTree(file, tree string) (*groot.File, rtree.Tree) {
+	var (
+		err error
+		f   *groot.File
+		t   rtree.Tree
+	)
 
 	key := w.workdir + file
-	if c, ok := w.cache[key]; ok {
-		f = c.file
-		t = c.tree
-	} else {
-		fname := path.Join(w.workdir, file)
-		f, err = croot.OpenFile(fname, "read", "TUCS ROOT file", 1, 0)
-		if f != nil && err == nil {
-			t = f.GetTree(tree)
-			if t == nil {
-				fmt.Printf("**error** tucs.FileTree failed to grab file=%s tree=%s\n",
-					file, tree)
-			} else {
-				w.cache[key] = centry{
-					file: f,
-					tree: t,
-				}
-			}
-		}
+	c, ok := w.cache[key]
+	if ok {
+		return c.file, c.tree
+	}
+
+	fname := path.Join(w.workdir, file)
+	f, err = groot.Open(fname)
+	if err != nil {
+		return nil, nil
+	}
+
+	o, err := f.Get(tree)
+	if err != nil {
+		return f, nil
+	}
+	t = o.(rtree.Tree)
+
+	w.cache[key] = centry{
+		file: f,
+		tree: t,
 	}
 	return f, t
 }
